@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import MainScreen from './src/screens/MainScreen/MainScreen';
 import SettingsScreen from './src/screens/SettingsScreen/SettingsScreen';
-import IconButton from './src/components/SettingsButton/SettingsButton';
+import IconButton from './src/components/IconButton/IconButton';
 
 const Navigation = createNativeStackNavigator();
 
