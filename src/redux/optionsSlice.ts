@@ -15,7 +15,6 @@ const initialState = {
   activityType: "recreational",
   participants: 0,
   price: 0,
-  key: 0,
 } as SliceType
 
 const optionsSlice = createSlice({
@@ -34,9 +33,6 @@ const optionsSlice = createSlice({
     setPrice(state, action: PayloadAction<number>){
       state.price = action.payload;
     },
-    setKey(state, action: PayloadAction<number>){
-      state.key = action.payload;
-    }
   }
 })
 
@@ -44,7 +40,6 @@ export const {
   setAccessibility, 
   setActivityType, 
   setParticipants, 
-  setPrice, 
-  setKey 
+  setPrice,
 } = optionsSlice.actions
 export default optionsSlice.reducer

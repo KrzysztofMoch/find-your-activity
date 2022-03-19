@@ -3,6 +3,7 @@ import React from 'react'
 import APP_COLORS from '../../common/colors'
 
 const SettingsScreen = () => {
+  
   // ------------------------- Render Functions -------------------------
 
   return (
@@ -15,7 +16,7 @@ const SettingsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: APP_COLORS.lightBlack,
+    backgroundColor: APP_COLORS.nightBlue,
   }
 })
 

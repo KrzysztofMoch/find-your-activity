@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^4",
+    "@miblanchard/react-native-slider": "^2.1.0",
     "@react-native-async-storage/async-storage": "^1.16.1",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.5.0",
