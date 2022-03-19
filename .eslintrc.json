@@ -1,0 +1,40 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["plugin:react/recommended", "airbnb", "airbnb/hooks", "prettier"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
+  "plugins": ["react", "react-native", "@typescript-eslint"],
+  "rules": {
+    "no-use-before-define": [2, { "variables": false, "functions": false }],
+    "import/extensions": 0,
+    "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx", "js", "ts"] }],
+    "react/function-component-definition": [2, { "namedComponents": "arrow-function" }],
+    "react-native/no-unused-styles": 2,
+    "react-native/split-platform-components": 2,
+    "react-native/no-inline-styles": 0,
+    "react-native/no-color-literals": 0,
+    "react-native/no-raw-text": 0,
+    "react-native/no-single-element-style-arrays": 2,
+    "no-undef": "off",
+    "global-require": "off",
+    "no-shadow": "off",
+    "no-unused-vars": ["error"],
+    "react/prop-types": "off"
+  }
+}
