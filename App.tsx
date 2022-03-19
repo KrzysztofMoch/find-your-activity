@@ -3,24 +3,28 @@ import { View } from 'react-native';
 import { createNativeStackNavigator, NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Provider } from 'react-redux';
 
 import MainScreen from './src/screens/MainScreen/MainScreen';
 import SettingsScreen from './src/screens/SettingsScreen/SettingsScreen';
 import IconButton from './src/components/IconButton/IconButton';
 import APP_COLORS from './src/common/colors';
+import store from './src/redux/store'
 
 const Navigation = createNativeStackNavigator();
 
 const App = () => (
   <View style={{ flex: 1 }}>
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer>
-        <Navigation.Navigator initialRouteName='MainScreen' screenOptions={defaultScreenOptions}>
-          <Navigation.Screen name='MainScreen' component={MainScreen} options={mainScreenOptions} />
-          <Navigation.Screen name='SettingsScreen' component={SettingsScreen} options={settingsScreenOptions} />
-        </Navigation.Navigator>
-      </NavigationContainer>
-    </GestureHandlerRootView>
+    <Provider store={store}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <NavigationContainer>
+          <Navigation.Navigator initialRouteName='MainScreen' screenOptions={defaultScreenOptions}>
+            <Navigation.Screen name='MainScreen' component={MainScreen} options={mainScreenOptions} />
+            <Navigation.Screen name='SettingsScreen' component={SettingsScreen} options={settingsScreenOptions} />
+          </Navigation.Navigator>
+        </NavigationContainer>
+      </GestureHandlerRootView>
+    </Provider>
   </View>
 );
 
