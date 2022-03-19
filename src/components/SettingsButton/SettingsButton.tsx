@@ -3,15 +3,15 @@ import React from 'react'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { useNavigation } from '@react-navigation/native'
 
-interface IconButtonProps {
+type IconButtonProps = {
   name: string
   size: number
   style: any
-  onPress?: () => void | undefined
-  navigateTo?: string | undefined
+  onPress?: () => void
+  navigateTo?: string
 }
 
-const IconButton = ({ name, size, style, onPress, navigateTo }: IconButtonProps) => {
+const IconButton: React.FC<IconButtonProps> = ({ name, size, style, onPress, navigateTo }) => {
   const naviagtion = useNavigation();
 
   // ------------------------- Handlers ---------------------------------
