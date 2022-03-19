@@ -1,7 +1,8 @@
 const APP_COLORS = {
     white: '#fff',
-    black: '#000',
-    lightBlack: '#1c1c1c',
+    black: '#16161e',
+    lightNightBlue: '#4e5172',
+    nightBlue: '#34364c',
 }
 
 export default APP_COLORS
