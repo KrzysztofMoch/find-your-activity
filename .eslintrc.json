@@ -21,6 +21,7 @@
   },
   "plugins": ["react", "react-native", "@typescript-eslint"],
   "rules": {
+    "react-hooks/rules-of-hooks": 0,
     "react/require-default-props": 0,
     "no-use-before-define": 0,
     "import/extensions": 0,
