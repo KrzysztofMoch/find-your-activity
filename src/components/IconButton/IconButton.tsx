@@ -1,7 +1,9 @@
-import { StyleSheet, TouchableOpacity } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import React from 'react'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { useNavigation } from '@react-navigation/native'
+
+import APP_COLORS from '../../common/colors'
 
 type IconButtonProps = {
   name: string
@@ -29,7 +31,7 @@ const IconButton: React.FC<IconButtonProps> = ({ name, size, style, onPress, nav
 
   return (
     <TouchableOpacity style={style} onPress={handleOnPress}>
-      <Icon name={name} size={size} />
+      <Icon name={name} size={size} color={APP_COLORS.white} />
     </TouchableOpacity>
   )
 }
