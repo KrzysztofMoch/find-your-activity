@@ -4,7 +4,7 @@ import activity from "../types/activity"
 
 interface SliceType {
   accessibility: number,
-  activityType: activity,
+  activityType: Array<activity>,
   participants: number,
   price: number,
   key: number,
@@ -12,7 +12,7 @@ interface SliceType {
 
 const initialState = { 
   accessibility: 0,
-  activityType: "recreational",
+  activityType: ["recreational"],
   participants: 0,
   price: 0,
 } as SliceType
@@ -24,7 +24,7 @@ const optionsSlice = createSlice({
     setAccessibility(state, action: PayloadAction<number>) {
       state.accessibility = action.payload;
     },
-    setActivityType(state, action: PayloadAction<activity>){
+    setActivityType(state, action: PayloadAction<Array<activity>>){
       state.activityType = action.payload;
     },
     setParticipants(state, action: PayloadAction<number>){
