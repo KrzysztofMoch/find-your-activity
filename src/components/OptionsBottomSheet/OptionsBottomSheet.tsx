@@ -1,11 +1,10 @@
-import React, { 
-  useCallback, 
+import React, {
   useEffect, 
   useMemo, 
   useRef, 
   useState 
 } from 'react';
-import { View, Text, StyleSheet, SliderComponent } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useDispatch, useSelector } from 'react-redux'
 import { Slider } from '@miblanchard/react-native-slider';
@@ -21,6 +20,9 @@ import {
 
 const OptionsBottomSheet = () => {
 
+  const MIN_HEIGHT = '8%';
+  const MAX_HEIGHT = '70%';
+
   // ------------------------- Redux -------------------------
 
   const dispatch = useDispatch()
@@ -30,13 +32,9 @@ const OptionsBottomSheet = () => {
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  const snapPoints = useMemo(() => ['8%', '70%'], []);
+  const snapPoints = useMemo(() => [MIN_HEIGHT, MAX_HEIGHT], []);
 
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index);
-  }, []);
-
-  // ------------------------- Redner Functions -------------------------
+  // ------------------------- Render Functions -------------------------
 
   const renderAccessibilitySlider = () => {
     const [stringValue, setStringValue] = useState<string>("Easy")
@@ -50,15 +48,12 @@ const OptionsBottomSheet = () => {
     // ------------------------- Handlers -------------------------
 
     const onValueChange = (value: number|number[]) => {
-      if(Array.isArray(value)){
-        dispatch(setAccessibility(value[0]))
-      }
-      else {
-        dispatch(setAccessibility(value))
-      }
+      const newValue = Array.isArray(value) ? value[0] : value
 
-      setStringValue(getStringValue(options.accessibility))
-      setSliderColor(getColor(options.accessibility))  
+      dispatch(setAccessibility(newValue))
+
+      setStringValue(getStringValue(newValue))
+      setSliderColor(getColor(newValue))  
     }
 
     const getColor = (value: number): string => {
@@ -108,7 +103,7 @@ const OptionsBottomSheet = () => {
       ref={bottomSheetRef}
       index={0}
       snapPoints={snapPoints}
-      onChange={handleSheetChanges}
+      // onChange={handleSheetChanges}
       backgroundStyle={{backgroundColor: APP_COLORS.lightNightBlue}}
     >
       <View style={styles.container}>

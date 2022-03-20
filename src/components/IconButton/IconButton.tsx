@@ -14,7 +14,7 @@ type IconButtonProps = {
 }
 
 const IconButton: React.FC<IconButtonProps> = ({ name, size, style, onPress, navigateTo }) => {
-  const naviagtion = useNavigation();
+  const navigation = useNavigation();
 
   // ------------------------- Handlers ---------------------------------
 
@@ -23,7 +23,8 @@ const IconButton: React.FC<IconButtonProps> = ({ name, size, style, onPress, nav
       onPress()
     }
     else if (navigateTo !== undefined) {
-      naviagtion.navigate(navigateTo)
+      // @ts-ignore - TS error when using string here
+      navigation.navigate(navigateTo)
     }
   }
 
