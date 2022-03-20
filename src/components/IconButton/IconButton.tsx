@@ -8,7 +8,7 @@ import APP_COLORS from '../../common/colors'
 type IconButtonProps = {
   name: string
   size: number
-  style: any
+  style?: any
   onPress?: () => void
   navigateTo?: string
 }
