@@ -3,11 +3,12 @@ import React, {
   useRef, 
   useState 
 } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { useDispatch, useSelector } from 'react-redux'
 import { Slider } from '@miblanchard/react-native-slider';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { ScrollView } from 'react-native-gesture-handler';
 
 import APP_COLORS from '../../common/colors';
 import { RootReducer } from '../../redux/store'
@@ -19,6 +20,9 @@ import {
 } from '../../redux/optionsSlice';
 import activity from '../../types/activity';
 import IconButton from '../IconButton/IconButton';
+import getColor from '../../common/getColor';
+import getDifficultyText from '../../common/getDifficultyString';
+import getPriceText from '../../common/getPriceString';
 
 const OptionsBottomSheet = () => {
 
@@ -26,6 +30,7 @@ const OptionsBottomSheet = () => {
   const MAX_HEIGHT = '70%';
 
   const [isActivityMenuOpen, setIsActivityMenuOpen] = useState<boolean>(false);
+  const [showBackground, setShownBackground] = useState<boolean>(false);
 
   // ------------------------- Redux -------------------------
 
@@ -89,7 +94,7 @@ const OptionsBottomSheet = () => {
     const [sliderColor, setSliderColor] = useState<string>("green")
 
     useEffect(() => {
-      setStringValue(getStringValue(options.accessibility))
+      setStringValue(getDifficultyText(options.accessibility))
       setSliderColor(getColor(options.accessibility))
     }, [])
 
@@ -100,7 +105,7 @@ const OptionsBottomSheet = () => {
 
       dispatch(setAccessibility(newValue))
 
-      setStringValue(getStringValue(newValue))
+      setStringValue(getDifficultyText(newValue))
       setSliderColor(getColor(newValue))  
     }
 
@@ -118,20 +123,6 @@ const OptionsBottomSheet = () => {
       return "green"
     }
 
-    const getStringValue = (value: number): string => {
-      if (value > 0.75){
-        return 'Very Hard'
-      } 
-      if (value > 0.40) {
-        return 'Hard'
-      } 
-      if (value > 0.15) {
-        return 'Normal'
-      } 
-      
-      return 'Easy'
-    }
-    
     // ------------------------- Render Functions -------------------------
     return (
       <View style={styles.sliderContainer}>
@@ -151,7 +142,7 @@ const OptionsBottomSheet = () => {
     const [sliderColor, setSliderColor] = useState<string>("green")
 
     useEffect(() => {
-      setStringValue(getStringValue(options.price))
+      setStringValue(getPriceText(options.price))
       setSliderColor(getColor(options.price))
     }, [])
 
@@ -162,36 +153,8 @@ const OptionsBottomSheet = () => {
 
       dispatch(setPrice(newValue))
 
-      setStringValue(getStringValue(newValue))
+      setStringValue(getPriceText(newValue))
       setSliderColor(getColor(newValue))  
-    }
-
-    const getColor = (value: number): string => {
-      if (value > 0.75){
-        return "red"
-      } 
-      if (value > 0.40) {
-        return "orange"
-      } 
-      if (value > 0.01) {
-        return "yellow"
-      } 
-      
-      return "green"
-    }
-
-    const getStringValue = (value: number): string => {
-      if (value > 0.75){
-        return 'Expensive'
-      } 
-      if (value > 0.40) {
-        return 'Normal'
-      } 
-      if (value > 0.01) {
-        return 'Cheap'
-      } 
-      
-      return 'Free'
     }
     
     // ------------------------- Render Functions -------------------------
@@ -217,15 +180,16 @@ const OptionsBottomSheet = () => {
       const value = add ? 1 : -1;
       const newValue = options.participants + value;
 
-      dispatch(setParticipants(newValue))
+      if(newValue >= 1)
+        dispatch(setParticipants(newValue))
     }
 
     // ------------------------- Render Functions -------------------------
     return(
       <View style={styles.participantsSettingsContainer}>
-        <IconButton name='add-circle-outline' size={36} onPress={() => handlePress(true)} />
-        <Text style={styles.participantsSettingsText}>{`Max count of participants ${options.participants}`}</Text>
         <IconButton name='remove-circle-outline' size={36} onPress={() => handlePress(false)} />
+        <Text style={styles.participantsSettingsText}>{`Count of participants ${options.participants}`}</Text>
+        <IconButton name='add-circle-outline' size={36} onPress={() => handlePress(true)} />
       </View>
     )
   }
@@ -235,17 +199,21 @@ const OptionsBottomSheet = () => {
       ref={bottomSheetRef}
       index={0}
       snapPoints={[MIN_HEIGHT, MAX_HEIGHT]}
-        // onChange={handleSheetChanges}
-      backgroundStyle={{backgroundColor: APP_COLORS.lightNightBlue}}
+      onChange={index => { setShownBackground(index !== 0)}}
+      backgroundStyle={styles.holderStyle}
+      handleIndicatorStyle={{backgroundColor: APP_COLORS.white}}
       enableContentPanningGesture={false}
     >
-      <View style={styles.container}>
+      <ScrollView 
+        style={styles.container} 
+        contentContainerStyle={styles.containerContent}
+      >
         <Text style={styles.title}>Options</Text>
         {renderActivityTypeSelection()}
         {renderAccessibilitySlider()}
         {renderPriceSlider()}
         {renderParticipantsSettings()}
-      </View>
+      </ScrollView>
     </BottomSheet>
   );
 };
@@ -253,10 +221,15 @@ const OptionsBottomSheet = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: APP_COLORS.lightNightBlue,
+    backgroundColor: APP_COLORS.darkBlue,
+  },
+  containerContent: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+  },
+  holderStyle: {
+    backgroundColor: APP_COLORS.darkBlue,
   },
   dropDownPicker: {
     width: '100%', 
