@@ -7,7 +7,6 @@ interface SliceType {
   activityType: Array<activity>,
   participants: number,
   price: number,
-  key: number,
 }
 
 const initialState = { 
