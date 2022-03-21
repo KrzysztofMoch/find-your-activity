@@ -21,9 +21,7 @@
   },
   "plugins": ["react", "react-native", "@typescript-eslint"],
   "rules": {
-    "react-hooks/rules-of-hooks": 0,
-    "react/require-default-props": 0,
-    "no-use-before-define": 0,
+    "no-use-before-define": [2, { "variables": false, "functions": false }],
     "import/extensions": 0,
     "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx", "js", "ts"] }],
     "react/function-component-definition": [2, { "namedComponents": "arrow-function" }],
