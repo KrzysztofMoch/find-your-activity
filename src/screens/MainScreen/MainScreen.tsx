@@ -2,11 +2,14 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  ToastAndroid,
+  Platform,
+  Alert
 } from 'react-native'
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import React from 'react'
+import { useSelector } from 'react-redux'
+import Clipboard from '@react-native-clipboard/clipboard';
 
 import APP_COLORS from '../../common/colors'
 import OptionsBottomSheet from '../../components/OptionsBottomSheet/OptionsBottomSheet'
@@ -14,14 +17,12 @@ import { RootReducer } from '../../redux/store'
 import getPriceString from '../../common/getPriceString'
 import getDifficultyString from '../../common/getDifficultyString'
 import getColor from '../../common/getColor'
+import ActivitySwiper from '../../components/ActivitySwiper/ActivitySwiper'
 
 const MainScreen: React.FC = () => {
 
-  const [showProperties, setShowProperties] = useState<boolean>(true)
-
   // ------------------------- Redux -------------------------
 
-  const dispatch = useDispatch()
   const data = useSelector((state: RootReducer) => state.data)
 
   // ------------------------- Render Functions -------------------------
@@ -31,10 +32,20 @@ const MainScreen: React.FC = () => {
     // ------------------------- Handlers -------------------------
 
     const handleOnPress = () => {
-      // TODO: copy activity key to clipboard
+      Clipboard.setString(data.key.toString())
+      Platform.select({
+        android: ToastAndroid.showWithGravity("Copy to Clipboard", 1000, ToastAndroid.BOTTOM),
+        default: Alert.prompt('Copied', 'Key has been copied')
+      })
     }
 
     // ------------------------- Render Functions -------------------------
+
+    if(!data.showProperties){
+      return (
+        <View style={styles.activityKeyContainer} />
+      )
+    }
 
     return(
       <TouchableOpacity 
@@ -46,86 +57,76 @@ const MainScreen: React.FC = () => {
     )
   }
 
-  const renderActivity = () => (
-    <ScrollView style={styles.activityContainer} contentContainerStyle={styles.activityContainerContent}>
-      <Text style={styles.activityText}>{data.activity}</Text>
-    </ScrollView>
+  const renderActivityType = () => (
+    <Text style={styles.activityPropertiesText}>
+      Activity type:
+      {' '}
+      <Text style={[styles.activityPropertiesText, {margin: 0}]}>
+        {data.showProperties && data.activityType}
+      </Text>
+    </Text>
+  )
+
+  const renderAccessibility = () => (
+    <Text style={styles.activityPropertiesText}>
+      Difficulty:
+      {' '}
+      <Text 
+        style={[styles.activityPropertiesText, {margin: 0, color: getColor(data.accessibility)}]}
+      >
+        {data.showProperties && getDifficultyString(data.accessibility)}
+      </Text>
+    </Text>
+  )
+
+  const renderPrice = () => (
+    <Text style={styles.activityPropertiesText}>
+      Price:
+      {' '}
+      <Text 
+        style={[styles.activityPropertiesText, {margin: 0, color: getColor(data.price)}]}
+      >
+        {data.showProperties && getPriceString(data.price)}
+      </Text>
+    </Text>
+  )
+
+  const renderCountOfParticipants = () => (
+    <Text style={styles.activityPropertiesText}>
+      {`Count of participants: ${data.showProperties ? data.participants : ''}`}
+    </Text>
   )
 
   const renderActivityProperties = () => (
     <View style={styles.activityPropertiesContainer}>
-      <Text style={styles.activityPropertiesText}>
-        {`Activity type: `}
-        <Text style={[styles.activityPropertiesText, {margin: 0}]}>
-          {showProperties && data.activityType}
-        </Text>
-      </Text>
-      <Text style={styles.activityPropertiesText}>
-        {`Difficulty: `}
-        <Text 
-          style={[styles.activityPropertiesText, {margin: 0, color: getColor(data.accessibility)}]}
-        >
-          {showProperties && getDifficultyString(data.accessibility)}
-        </Text>
-      </Text>
-      <Text style={styles.activityPropertiesText}>
-        {`Price: `}
-        <Text 
-          style={[styles.activityPropertiesText, {margin: 0, color: getColor(data.price)}]}
-        >
-          {showProperties && getPriceString(data.price)}
-        </Text>
-      </Text>
-      <Text style={styles.activityPropertiesText}>
-        {`Count of participants: ${showProperties && data.participants}`}
-      </Text>
+      {renderActivityType()}
+      {renderAccessibility()}
+      {renderPrice()}
+      {renderCountOfParticipants()}
     </View>
   )
 
+  const renderActivitySwiper = () => <ActivitySwiper />
+
   return (
     <View style={styles.container}>
-      <ScrollView 
-        style={styles.activityView} 
-        contentContainerStyle={styles.activityViewContent}
+      <View 
+        style={styles.activityViewContent} 
       >
         {renderActivityKey()}
-        {renderActivity()}
+        {renderActivitySwiper()}
         {renderActivityProperties()}
-      </ScrollView>
+      </View>
       <OptionsBottomSheet />
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  activityView: {
-    flex: 1,
-  },
   activityViewContent: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-  },
-  activityText: {
-    color: APP_COLORS.white,
-    fontSize: 26,
-    fontWeight: "500",
-    letterSpacing: 0.7,
-    maxHeight: '100%',
-    textAlign: 'center',
-  },
-  activityContainer: {
-    backgroundColor: APP_COLORS.lightNightBlue,
-    width: '90%',
-    height: 350,
-    padding: 10,
-    borderRadius: 10,
-  },
-  activityContainerContent: {
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    display: 'flex', 
-    flex: 1
   },
   activityPropertiesContainer: {
     width: '90%',
