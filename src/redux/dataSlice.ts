@@ -9,6 +9,7 @@ interface SliceType {
   participants: number,
   price: number,
   key: number,
+  showProperties: boolean,
 }
 
 const initialState = { 
@@ -18,6 +19,7 @@ const initialState = {
   participants: 1,
   price: 0,
   key: 5808228,
+  showProperties: false,
 } as SliceType
 
 const optionsSlice = createSlice({
@@ -25,10 +27,13 @@ const optionsSlice = createSlice({
   initialState,
   reducers: {
     setData(state, action: PayloadAction<SliceType>) {
-        state = action.payload
+        return action.payload
+    },
+    setShowProperties(state, action: PayloadAction<boolean>) {
+      state.showProperties = action.payload
     }
   }
 })
 
-export const { setData } = optionsSlice.actions
+export const { setData, setShowProperties } = optionsSlice.actions
 export default optionsSlice.reducer

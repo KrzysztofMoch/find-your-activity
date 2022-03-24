@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import optionsSlice from "./optionsSlice";
-import responseSlice from "./responseSlice";
+import responseSlice from "./dataSlice";
 
 const store = configureStore({
   reducer: {
