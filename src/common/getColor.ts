@@ -1,11 +1,11 @@
 const getColor = (value: number): string => {
-    if (value > 0.75){
+    if (value > 0.85){
       return "red"
     } 
-    if (value > 0.40) {
+    if (value > 0.60) {
       return "orange"
     } 
-    if (value > 0.15) {
+    if (value > 0.25) {
       return "yellow"
     } 
     
