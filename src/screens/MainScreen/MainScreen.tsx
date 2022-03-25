@@ -15,7 +15,7 @@ import APP_COLORS from '../../common/colors'
 import OptionsBottomSheet from '../../components/OptionsBottomSheet/OptionsBottomSheet'
 import { RootReducer } from '../../redux/store'
 import getPriceString from '../../common/getPriceString'
-import getDifficultyString from '../../common/getDifficultyString'
+import getAccessibilityString from '../../common/getAccessibilityText'
 import getColor from '../../common/getColor'
 import ActivitySwiper from '../../components/ActivitySwiper/ActivitySwiper'
 
@@ -69,12 +69,12 @@ const MainScreen: React.FC = () => {
 
   const renderAccessibility = () => (
     <Text style={styles.activityPropertiesText}>
-      Difficulty:
+      Accessibility:
       {' '}
       <Text 
         style={[styles.activityPropertiesText, {margin: 0, color: getColor(data.accessibility)}]}
       >
-        {data.showProperties && getDifficultyString(data.accessibility)}
+        {data.showProperties && getAccessibilityString(data.accessibility)}
       </Text>
     </Text>
   )
