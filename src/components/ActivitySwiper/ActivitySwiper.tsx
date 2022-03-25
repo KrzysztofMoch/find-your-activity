@@ -1,10 +1,13 @@
 import { StyleSheet, Text, View, FlatList } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import APP_COLORS from '../../common/colors'
 import activityData from '../../types/activityData'
 import { setData, setShowProperties } from '../../redux/dataSlice'
+import { getActivityByProperties, getRandomActivity } from '../../api/boredApi'
+import { RootReducer } from '../../redux/store'
+
 
 const CONFIG = {
   height: 340,
@@ -14,6 +17,8 @@ const CONFIG = {
 const ActivitySwiper = () => {
 
   const dispatch = useDispatch();
+  const options = useSelector((state: RootReducer) => state.options)
+
   const [bufferedData, setBufferedData] = useState<Array<activityData>>([
     {
       activity: 'Swap Down To Start',
@@ -45,7 +50,8 @@ const ActivitySwiper = () => {
   // ------------------------- Handler -------------------------
 
   const handleEndReached = async () => {
-    const randomActivity = await getRandomActivity();
+    // const randomActivity = await getRandomActivity();
+    const randomActivity = await getActivityByProperties(options)
     const newBufferedData = [...bufferedData, randomActivity]
 
     // removing top item is so bug
@@ -55,25 +61,6 @@ const ActivitySwiper = () => {
     // }
 
     setBufferedData(newBufferedData)
-  }
-
-  // ------------------------- Utilities -------------------------
-
-  const getRandomActivity = async () => {
-
-    const req = await fetch('http://www.boredapi.com/api/activity/')
-    const json = await req.json()
-    
-    const result: activityData = {
-      activity: json.activity,
-      accessibility: json.accessibility,
-      activityType: json.type,
-      participants: json.participants,
-      price: json.price,
-      key: json.key,
-    }
-
-    return result;
   }
 
   // ------------------------- Render Functions -------------------------
