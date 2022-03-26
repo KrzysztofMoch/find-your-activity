@@ -1,219 +1,88 @@
-import React, {
-  useEffect, 
-  useRef, 
-  useState 
-} from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
-import { useDispatch, useSelector } from 'react-redux'
-import { Slider } from '@miblanchard/react-native-slider';
+import { useDispatch } from 'react-redux';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { ScrollView } from 'react-native-gesture-handler';
 
 import APP_COLORS from '../../common/colors';
-import { RootReducer } from '../../redux/store'
-import { 
-  setAccessibility, 
-  setActivityType, 
-  setParticipants, 
-  setPrice 
-} from '../../redux/optionsSlice';
-import activity from '../../types/activity';
-import IconButton from '../IconButton/IconButton';
-import getColor from '../../common/getColor';
-import getDifficultyText from '../../common/getDifficultyString';
-import getPriceText from '../../common/getPriceString';
+import { setSearchOption } from '../../redux/optionsSlice';
+import filterOption from '../../types/searchOption';
+import ActivityTypeOption from '../optionsComponents/ActivityTypeOption';
+import ParticipantsOption from '../optionsComponents/ParticipantsOption';
+import AccessibilityOption from '../optionsComponents/AccessibilityOption';
+import AccessibilityRangeOption from '../optionsComponents/AccessibilityRangeOption';
+import PriceRangeOption from '../optionsComponents/PriceRangeOption';
+import PriceOption from '../optionsComponents/PriceOption';
 
 const OptionsBottomSheet = () => {
-
   const MIN_HEIGHT = '8%';
-  const MAX_HEIGHT = '70%';
+  const MAX_HEIGHT = '60%';
 
-  const [isActivityMenuOpen, setIsActivityMenuOpen] = useState<boolean>(false);
-  const [showBackground, setShownBackground] = useState<boolean>(false);
-
-  // ------------------------- Redux -------------------------
-
-  const dispatch = useDispatch()
-  const options = useSelector((state: RootReducer) => state.options)
-
-  // ------------------------- Utilities -------------------------
-
+  const dispatch = useDispatch();
   const bottomSheetRef = useRef<BottomSheet>(null);
+
+  const [filterBy, setFilterBy] = useState<filterOption>(filterOption.ACTIVITY_TYPE);
+
+  useEffect(() => {
+    dispatch(setSearchOption(filterBy));
+  }, [dispatch, filterBy]);
 
   // ------------------------- Render Functions -------------------------
 
-  const renderActivityTypeSelection = () => {
-    
-    const [items, setItems] = useState<Array<{label: string, value: activity}>>(
-      [
-        {label: 'Education', value: 'education' },
-        {label: 'Recreational', value: 'recreational' },
-        {label: 'Social', value: 'social' },
-        {label: 'Diy', value: 'diy' },
-        {label: 'Charity', value: 'charity' },
-        {label: 'Cooking', value: 'cooking' },
-        {label: 'Relaxation', value: 'relaxation' },
-        {label: 'Music', value: 'music' },
-        {label: 'Busywork', value: 'busywork' },
-      ]
-    )
-    const [value, setValue] = useState<Array<activity>>(options.activityType);
-
-    useEffect(() => {
-      dispatch(setActivityType(value))
-    }, [value])
+  const renderOptionChose = () => {
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [items, setItems] = useState<Array<{ label: string; value: filterOption }>>([
+      { label: 'Activity Type', value: filterOption.ACTIVITY_TYPE },
+      { label: 'Participants', value: filterOption.PARTICIPANTS },
+      { label: 'Accessibility', value: filterOption.ACCESSIBILITY },
+      { label: 'Accessibility Range', value: filterOption.ACCESSIBILITY_RANGE },
+      { label: 'Price', value: filterOption.PRICE },
+      { label: 'Price Range', value: filterOption.PRICE_RANGE },
+    ]);
 
     // ------------------------- Render Functions -------------------------
-    return(
-      <View style={styles.dropDownPickerContainer}>
-        <Text style={styles.dropDownPickerTitle}>Activity Types</Text>
+    return (
+      <View style={styles.optionChoseDropDownContainer}>
+        <Text style={styles.optionChoseDropDownTitle}>Filter By:</Text>
         <DropDownPicker
+          multiple={false}
           closeOnBackPressed
           items={items}
-          multiple
-          min={0}
-          max={9}
-          mode='BADGE'
-          open={isActivityMenuOpen}
-          style={styles.dropDownPicker}
+          mode="BADGE"
+          open={isOpen}
+          style={{}}
+          containerStyle={styles.optionChoseDropDown}
           setItems={setItems}
-          setOpen={setIsActivityMenuOpen}
-          // @ts-ignore - lib TS issue 
-          setValue={setValue}
-          theme='DARK'
+          setOpen={setIsOpen}
+          // @ts-ignore - lib TS issue
+          setValue={setFilterBy}
+          theme="DARK"
           showBadgeDot={false}
-          value={options.activityType}
+          value={filterBy}
         />
       </View>
-    )
-  }
-
-  const renderAccessibilitySlider = () => {
-    const [stringValue, setStringValue] = useState<string>("Easy")
-    const [sliderColor, setSliderColor] = useState<string>("green")
-
-    useEffect(() => {
-      setStringValue(getDifficultyText(options.accessibility))
-      setSliderColor(getColor(options.accessibility))
-    }, [])
-
-    // ------------------------- Handlers -------------------------
-
-    const onValueChange = (value: number|number[]) => {
-      const newValue = Array.isArray(value) ? value[0] : value
-
-      dispatch(setAccessibility(newValue))
-
-      setStringValue(getDifficultyText(newValue))
-      setSliderColor(getColor(newValue))  
-    }
-
-    const getColor = (value: number): string => {
-      if (value > 0.75){
-        return "red"
-      } 
-      if (value > 0.40) {
-        return "orange"
-      } 
-      if (value > 0.15) {
-        return "yellow"
-      } 
-      
-      return "green"
-    }
-
-    // ------------------------- Render Functions -------------------------
-    return (
-      <View style={styles.sliderContainer}>
-        <Text style={styles.sliderText}>{`difficulty: ${stringValue}`}</Text>
-        <Slider
-          thumbTintColor={APP_COLORS.black}
-          minimumTrackTintColor={sliderColor}
-          value={options.accessibility}
-          onValueChange={value => onValueChange(value)}
-        />
-      </View>
-    )
-  }
-
-  const renderPriceSlider = () => {
-    const [stringValue, setStringValue] = useState<string>("Free")
-    const [sliderColor, setSliderColor] = useState<string>("green")
-
-    useEffect(() => {
-      setStringValue(getPriceText(options.price))
-      setSliderColor(getColor(options.price))
-    }, [])
-
-    // ------------------------- Handlers -------------------------
-
-    const onValueChange = (value: number|number[]) => {
-      const newValue = Array.isArray(value) ? value[0] : value
-
-      dispatch(setPrice(newValue))
-
-      setStringValue(getPriceText(newValue))
-      setSliderColor(getColor(newValue))  
-    }
-    
-    // ------------------------- Render Functions -------------------------
-    return (
-      <View style={styles.sliderContainer}>
-        <Text style={styles.sliderText}>{`Price: ${stringValue}`}</Text>
-        <Slider
-          thumbTintColor={APP_COLORS.black}
-          minimumTrackTintColor={sliderColor}
-          value={options.price}
-          onValueChange={value => onValueChange(value)}
-          trackClickable={false}
-        />
-      </View>
-    )
-  }
-
-  const renderParticipantsSettings = () => {
-
-    // ------------------------- Handlers -------------------------
-
-    const handlePress = (add: boolean) => {
-      const value = add ? 1 : -1;
-      const newValue = options.participants + value;
-
-      if(newValue >= 1)
-        dispatch(setParticipants(newValue))
-    }
-
-    // ------------------------- Render Functions -------------------------
-    return(
-      <View style={styles.participantsSettingsContainer}>
-        <IconButton name='remove-circle-outline' size={36} onPress={() => handlePress(false)} />
-        <Text style={styles.participantsSettingsText}>{`Count of participants ${options.participants}`}</Text>
-        <IconButton name='add-circle-outline' size={36} onPress={() => handlePress(true)} />
-      </View>
-    )
-  }
+    );
+  };
 
   return (
     <BottomSheet
       ref={bottomSheetRef}
       index={0}
       snapPoints={[MIN_HEIGHT, MAX_HEIGHT]}
-      onChange={index => { setShownBackground(index !== 0)}}
       backgroundStyle={styles.holderStyle}
-      handleIndicatorStyle={{backgroundColor: APP_COLORS.white}}
+      handleIndicatorStyle={{ backgroundColor: APP_COLORS.white }}
       enableContentPanningGesture={false}
     >
-      <ScrollView 
-        style={styles.container} 
-        contentContainerStyle={styles.containerContent}
-      >
+      <View style={styles.container}>
         <Text style={styles.title}>Options</Text>
-        {renderActivityTypeSelection()}
-        {renderAccessibilitySlider()}
-        {renderPriceSlider()}
-        {renderParticipantsSettings()}
-      </ScrollView>
+        {renderOptionChose()}
+        {filterBy === filterOption.ACTIVITY_TYPE && <ActivityTypeOption />}
+        {filterBy === filterOption.PARTICIPANTS && <ParticipantsOption />}
+        {filterBy === filterOption.ACCESSIBILITY && <AccessibilityOption />}
+        {filterBy === filterOption.ACCESSIBILITY_RANGE && <AccessibilityRangeOption />}
+        {filterBy === filterOption.PRICE && <PriceOption />}
+        {filterBy === filterOption.PRICE_RANGE && <PriceRangeOption />}
+      </View>
     </BottomSheet>
   );
 };
@@ -222,8 +91,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: APP_COLORS.darkBlue,
-  },
-  containerContent: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -231,51 +98,31 @@ const styles = StyleSheet.create({
   holderStyle: {
     backgroundColor: APP_COLORS.darkBlue,
   },
-  dropDownPicker: {
-    width: '100%', 
+  optionChoseDropDown: {
+    width: '75%',
   },
-  dropDownPickerContainer: {
+  optionChoseDropDownContainer: {
     width: '90%',
     marginBottom: 18,
-  },
-  dropDownPickerTitle: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: "500",
-    letterSpacing: 1,
-    marginBottom: 5,
-  },
-  participantsSettingsContainer: {
-    width: '90%',
     display: 'flex',
-    justifyContent: 'space-around',
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 12,
   },
-  participantsSettingsText: {
-    color: APP_COLORS.white,
-    fontSize: 22,
-    fontWeight: "600",
-    letterSpacing: 1,
-  },
-  sliderContainer: {
-    width: '80%',
-    marginVertical: 2,
-  },
-  sliderText: {
+  optionChoseDropDownTitle: {
     color: 'white',
-    fontSize: 20,
-    fontWeight: "500",
+    fontSize: 18,
+    fontWeight: '500',
     letterSpacing: 1,
+    marginBottom: 5,
+    marginRight: 10,
   },
   title: {
     color: APP_COLORS.white,
     fontSize: 22,
-    fontWeight: "600",
+    fontWeight: '600',
     letterSpacing: 1,
     marginBottom: 20,
-  }, 
+  },
 });
 
 export default OptionsBottomSheet;

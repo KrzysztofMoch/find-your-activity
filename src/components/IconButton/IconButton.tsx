@@ -1,16 +1,16 @@
-import { TouchableOpacity } from 'react-native'
-import React from 'react'
-import Icon from 'react-native-vector-icons/Ionicons'
-import { useNavigation } from '@react-navigation/native'
+import { TouchableOpacity } from 'react-native';
+import React from 'react';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 
-import APP_COLORS from '../../common/colors'
+import APP_COLORS from '../../common/colors';
 
-type IconButtonProps = {
-  name: string
-  size: number
-  style?: any
-  onPress?: () => void
-  navigateTo?: string
+interface IconButtonProps {
+  name: string;
+  size: number;
+  style?: any;
+  onPress?: () => void;
+  navigateTo?: string;
 }
 
 const IconButton: React.FC<IconButtonProps> = ({ name, size, style, onPress, navigateTo }) => {
@@ -19,14 +19,13 @@ const IconButton: React.FC<IconButtonProps> = ({ name, size, style, onPress, nav
   // ------------------------- Handlers ---------------------------------
 
   const handleOnPress = () => {
-    if(onPress !== undefined) {
-      onPress()
-    }
-    else if (navigateTo !== undefined) {
+    if (onPress !== undefined) {
+      onPress();
+    } else if (navigateTo !== undefined) {
       // @ts-ignore - TS error when using string here
-      navigation.navigate(navigateTo)
+      navigation.navigate(navigateTo);
     }
-  }
+  };
 
   // ------------------------- Render functions -------------------------
 
@@ -34,7 +33,7 @@ const IconButton: React.FC<IconButtonProps> = ({ name, size, style, onPress, nav
     <TouchableOpacity style={style} onPress={handleOnPress}>
       <Icon name={name} size={size} color={APP_COLORS.white} />
     </TouchableOpacity>
-  )
-}
+  );
+};
 
-export default IconButton
+export default IconButton;
