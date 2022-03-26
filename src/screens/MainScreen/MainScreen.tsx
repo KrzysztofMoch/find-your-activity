@@ -1,101 +1,91 @@
-import { 
+import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
   ToastAndroid,
   Platform,
-  Alert
-} from 'react-native'
-import React from 'react'
-import { useSelector } from 'react-redux'
+  Alert,
+  DevSettings,
+} from 'react-native';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import Clipboard from '@react-native-clipboard/clipboard';
+import NetInfo from '@react-native-community/netinfo';
 
-import APP_COLORS from '../../common/colors'
-import OptionsBottomSheet from '../../components/OptionsBottomSheet/OptionsBottomSheet'
-import { RootReducer } from '../../redux/store'
-import getPriceString from '../../common/getPriceString'
-import getAccessibilityString from '../../common/getAccessibilityText'
-import getColor from '../../common/getColor'
-import ActivitySwiper from '../../components/ActivitySwiper/ActivitySwiper'
+import APP_COLORS from '../../common/colors';
+import OptionsBottomSheet from '../../components/OptionsBottomSheet/OptionsBottomSheet';
+import { RootReducer } from '../../redux/store';
+import getPriceString from '../../common/getPriceString';
+import getAccessibilityString from '../../common/getAccessibilityText';
+import getColor from '../../common/getColor';
+import ActivitySwiper from '../../components/ActivitySwiper/ActivitySwiper';
 
 const MainScreen: React.FC = () => {
-
   // ------------------------- Redux -------------------------
 
-  const data = useSelector((state: RootReducer) => state.data)
+  const data = useSelector((state: RootReducer) => state.data);
 
   // ------------------------- Render Functions -------------------------
 
   const renderActivityKey = () => {
-
     // ------------------------- Handlers -------------------------
 
     const handleOnPress = () => {
-      Clipboard.setString(data.key.toString())
+      Clipboard.setString(data.key.toString());
       Platform.select({
-        android: ToastAndroid.showWithGravity("Copy to Clipboard", 1000, ToastAndroid.BOTTOM),
-        default: Alert.prompt('Copied', 'Key has been copied')
-      })
-    }
+        android: ToastAndroid.showWithGravity('Copy to Clipboard', 1000, ToastAndroid.BOTTOM),
+        default: Alert.prompt('Copied', 'Key has been copied'),
+      });
+    };
 
     // ------------------------- Render Functions -------------------------
 
-    if(!data.showProperties){
-      return (
-        <View style={styles.activityKeyContainer} />
-      )
+    if (!data.showProperties) {
+      return <View style={styles.activityKeyContainer} />;
     }
 
-    return(
-      <TouchableOpacity 
-        style={styles.activityKeyContainer}
-        onPress={handleOnPress}
-      >
+    return (
+      <TouchableOpacity style={styles.activityKeyContainer} onPress={handleOnPress}>
         <Text style={styles.activityKey}>{`#${data.key}`}</Text>
       </TouchableOpacity>
-    )
-  }
+    );
+  };
 
   const renderActivityType = () => (
     <Text style={styles.activityPropertiesText}>
-      Activity type:
-      {' '}
-      <Text style={[styles.activityPropertiesText, {margin: 0}]}>
+      Activity type:{' '}
+      <Text style={[styles.activityPropertiesText, { margin: 0 }]}>
         {data.showProperties && data.activityType}
       </Text>
     </Text>
-  )
+  );
 
   const renderAccessibility = () => (
     <Text style={styles.activityPropertiesText}>
-      Accessibility:
-      {' '}
-      <Text 
-        style={[styles.activityPropertiesText, {margin: 0, color: getColor(data.accessibility)}]}
+      Accessibility:{' '}
+      <Text
+        style={[styles.activityPropertiesText, { margin: 0, color: getColor(data.accessibility) }]}
       >
         {data.showProperties && getAccessibilityString(data.accessibility)}
       </Text>
     </Text>
-  )
+  );
 
   const renderPrice = () => (
     <Text style={styles.activityPropertiesText}>
-      Price:
-      {' '}
-      <Text 
-        style={[styles.activityPropertiesText, {margin: 0, color: getColor(data.price)}]}
-      >
+      Price:{' '}
+      <Text style={[styles.activityPropertiesText, { margin: 0, color: getColor(data.price) }]}>
         {data.showProperties && getPriceString(data.price)}
       </Text>
     </Text>
-  )
+  );
 
   const renderCountOfParticipants = () => (
     <Text style={styles.activityPropertiesText}>
       {`Count of participants: ${data.showProperties ? data.participants : ''}`}
     </Text>
-  )
+  );
 
   const renderActivityProperties = () => (
     <View style={styles.activityPropertiesContainer}>
@@ -104,23 +94,21 @@ const MainScreen: React.FC = () => {
       {renderPrice()}
       {renderCountOfParticipants()}
     </View>
-  )
+  );
 
-  const renderActivitySwiper = () => <ActivitySwiper />
+  const renderActivitySwiper = () => <ActivitySwiper />;
 
   return (
     <View style={styles.container}>
-      <View 
-        style={styles.activityViewContent} 
-      >
+      <View style={styles.activityViewContent}>
         {renderActivityKey()}
         {renderActivitySwiper()}
         {renderActivityProperties()}
       </View>
       <OptionsBottomSheet />
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   activityViewContent: {
@@ -136,7 +124,7 @@ const styles = StyleSheet.create({
   activityPropertiesText: {
     color: APP_COLORS.white,
     fontSize: 20,
-    fontWeight: "500",
+    fontWeight: '500',
     letterSpacing: 0.7,
     marginVertical: 2,
   },
@@ -158,6 +146,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: APP_COLORS.nightBlue,
   },
-})
+});
 
 export default MainScreen;

@@ -1,37 +1,37 @@
-import { Slider } from "@miblanchard/react-native-slider"
-import React, { useEffect, useState } from "react"
-import { View, Text, StyleSheet } from "react-native"
-import { useDispatch, useSelector } from "react-redux"
+import { Slider } from '@miblanchard/react-native-slider';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
-import APP_COLORS from "../../common/colors"
-import getAccessibilityText from "../../common/getAccessibilityText"
-import getColor from "../../common/getColor"
-import { setAccessibilityMin, setAccessibilityMax } from "../../redux/optionsSlice"
-import { RootReducer } from "../../redux/store"
+import APP_COLORS from '../../common/colors';
+import getAccessibilityText from '../../common/getAccessibilityText';
+import getColor from '../../common/getColor';
+import { setAccessibilityMin, setAccessibilityMax } from '../../redux/optionsSlice';
+import { RootReducer } from '../../redux/store';
 
 const AccessibilityRangeOption = () => {
-  const dispatch = useDispatch()
-  const options = useSelector((state: RootReducer) => state.options)
-  
-  const [stringValue, setStringValue] = useState<Array<string>>(['Very Hight', 'Very Low'])
-  const [sliderColor, setSliderColor] = useState<string>("green")
+  const dispatch = useDispatch();
+  const options = useSelector((state: RootReducer) => state.options);
+
+  const [stringValue, setStringValue] = useState<Array<string>>(['Very Hight', 'Very Low']);
+  const [sliderColor, setSliderColor] = useState<string>('green');
   const [value, setValue] = useState<Array<number>>([
     options.accessibilityMin,
     options.accessibilityMax * 100,
-  ])
+  ]);
 
   // valueMin - 0, valueMax - 1
 
   useEffect(() => {
-    const fixedMaxValue = parseFloat((value[1] / 100).toFixed(2))
-    const fixedMinValue = parseFloat((value[0]).toFixed(2))
+    const fixedMaxValue = parseFloat((value[1] / 100).toFixed(2));
+    const fixedMinValue = parseFloat(value[0].toFixed(2));
 
-    setStringValue([getAccessibilityText(fixedMinValue), getAccessibilityText(fixedMaxValue)])
-    setSliderColor(getColor(fixedMaxValue))
-    
-    dispatch(setAccessibilityMin(fixedMinValue))
-    dispatch(setAccessibilityMax(fixedMaxValue))  
-  }, [dispatch, value])
+    setStringValue([getAccessibilityText(fixedMinValue), getAccessibilityText(fixedMaxValue)]);
+    setSliderColor(getColor(fixedMaxValue));
+
+    dispatch(setAccessibilityMin(fixedMinValue));
+    dispatch(setAccessibilityMax(fixedMaxValue));
+  }, [dispatch, value]);
 
   // ------------------------- Render Functions -------------------------
   return (
@@ -44,14 +44,12 @@ const AccessibilityRangeOption = () => {
         maximumValue={100}
         value={value}
         step={2}
-        onValueChange={newValue => setValue(Array.isArray(newValue) ? newValue : value)}
+        onValueChange={(newValue) => setValue(Array.isArray(newValue) ? newValue : value)}
       />
-      <Text style={styles.description}>
-        Range of options, how possible an event
-      </Text>
+      <Text style={styles.description}>Select range of how possible is an event</Text>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   description: {
@@ -71,9 +69,9 @@ const styles = StyleSheet.create({
     color: 'white',
     marginBottom: 4,
     fontSize: 20,
-    fontWeight: "500",
+    fontWeight: '500',
     letterSpacing: 1,
   },
-})
+});
 
 export default AccessibilityRangeOption;

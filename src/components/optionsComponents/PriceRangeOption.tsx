@@ -1,37 +1,34 @@
-import { Slider } from "@miblanchard/react-native-slider"
-import React, { useEffect, useState } from "react"
-import { View, Text, StyleSheet } from "react-native"
-import { useDispatch, useSelector } from "react-redux"
+import { Slider } from '@miblanchard/react-native-slider';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
-import APP_COLORS from "../../common/colors"
-import getColor from "../../common/getColor"
-import getTextPrice from "../../common/getPriceString"
-import { setPriceMin, setPriceMax } from "../../redux/optionsSlice"
-import { RootReducer } from "../../redux/store"
+import APP_COLORS from '../../common/colors';
+import getColor from '../../common/getColor';
+import getTextPrice from '../../common/getPriceString';
+import { setPriceMin, setPriceMax } from '../../redux/optionsSlice';
+import { RootReducer } from '../../redux/store';
 
 const PriceRangeOption = () => {
-  const dispatch = useDispatch()
-  const options = useSelector((state: RootReducer) => state.options)
-  
-  const [stringValue, setStringValue] = useState<Array<string>>(['Cheap', 'Very Expensive'])
-  const [sliderColor, setSliderColor] = useState<string>("green")
-  const [value, setValue] = useState<Array<number>>([
-    options.priceMin,
-    options.priceMax * 100,
-  ])
+  const dispatch = useDispatch();
+  const options = useSelector((state: RootReducer) => state.options);
+
+  const [stringValue, setStringValue] = useState<Array<string>>(['Cheap', 'Very Expensive']);
+  const [sliderColor, setSliderColor] = useState<string>('green');
+  const [value, setValue] = useState<Array<number>>([options.priceMin, options.priceMax * 100]);
 
   // valueMin - 0, valueMax - 1
 
   useEffect(() => {
-    const fixedMaxValue = parseFloat((value[1] / 100).toFixed(2))
-    const fixedMinValue = parseFloat((value[0]).toFixed(2))
+    const fixedMaxValue = parseFloat((value[1] / 100).toFixed(2));
+    const fixedMinValue = parseFloat(value[0].toFixed(2));
 
-    setStringValue([getTextPrice(fixedMinValue), getTextPrice(fixedMaxValue)])
-    setSliderColor(getColor(fixedMaxValue))
-    
-    dispatch(setPriceMin(fixedMinValue))
-    dispatch(setPriceMax(fixedMaxValue))  
-  }, [dispatch, value])
+    setStringValue([getTextPrice(fixedMinValue), getTextPrice(fixedMaxValue)]);
+    setSliderColor(getColor(fixedMaxValue));
+
+    dispatch(setPriceMin(fixedMinValue));
+    dispatch(setPriceMax(fixedMaxValue));
+  }, [dispatch, value]);
 
   // ------------------------- Render Functions -------------------------
   return (
@@ -44,14 +41,12 @@ const PriceRangeOption = () => {
         maximumValue={100}
         value={value}
         step={2}
-        onValueChange={newValue => setValue(Array.isArray(newValue) ? newValue : value)}
+        onValueChange={(newValue) => setValue(Array.isArray(newValue) ? newValue : value)}
       />
-      <Text style={styles.description}>
-        Activity cost range
-      </Text>
+      <Text style={styles.description}>Select activity cost range</Text>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   description: {
@@ -70,9 +65,9 @@ const styles = StyleSheet.create({
   sliderText: {
     color: 'white',
     fontSize: 20,
-    fontWeight: "500",
+    fontWeight: '500',
     letterSpacing: 1,
   },
-})
+});
 
 export default PriceRangeOption;
