@@ -1,83 +1,123 @@
 /* eslint-disable no-unused-vars */
 // doc - https://www.boredapi.com/documentation
-import axios from 'axios'; 
-import dataSlice from '../redux/dataSlice';
+import axios from 'axios';
+import Netinfo from '@react-native-community/netinfo';
+
+import { handleNoConnection, handleObsoleteApi, showError } from '../helpers/handleError';
 import { OptionsSliceType } from '../redux/optionsSlice';
 import activityData from '../types/activityData';
-import searchOption from '../types/seacrhOption';
+import searchOption from '../types/searchOption';
+
+const emptyResult: activityData = {
+  price: 0,
+  accessibility: 0,
+  activity: '#ERROR',
+  activityType: 'busywork',
+  participants: 0,
+  key: 0,
+};
 
 const API = axios.create({
-    baseURL: 'http://www.boredapi.com/api/activity/',
-    timeout: 5000,
-    method: 'GET',
-})
+  baseURL: 'http://www.boredapi.com/api/activity/',
+  timeout: 5000,
+  method: 'GET',
+});
 
-const showError = (status: number) => {
-    
-}
+const handleStatusError = (status: number) => {
+  showError(
+    'Something went wrong',
+    `Response has code ${status}, if the error persists please let me know`
+  );
+};
+
+const hasInternetConnection: () => Promise<boolean | null> = async () => {
+  return (await Netinfo.fetch()).isInternetReachable;
+};
+
+// ------------------------- requests -------------------------
 
 const getRandomActivity: () => Promise<activityData> = async () => {
-    const response = await API.get('')
+  if (!(await hasInternetConnection())) {
+    handleNoConnection();
+    return emptyResult;
+  }
 
-    if (response.status !== 200) {
-        // TODO: make error system
-    }
+  const response = await API.get('');
 
-    const result: activityData = response.data;
-    return result;
-}
+  if (response.status !== 200) {
+    handleStatusError(response.status);
+    return emptyResult;
+  }
+
+  const result: activityData = response.data;
+  return result;
+};
 
 const getActivityByKey: (key: string) => Promise<activityData> = async (key: string) => {
-    const response = await API.get(`?key=${key}`)
+  if (!(await hasInternetConnection())) {
+    handleNoConnection();
+    return emptyResult;
+  }
 
-    if (response.status !== 200) {
-        // TODO: make error system
-    }
+  const response = await API.get(`?key=${key}`);
 
-    const result: activityData = response.data;
+  if (response.status !== 200) {
+    handleStatusError(response.status);
+    return emptyResult;
+  }
+
+  const result: activityData = response.data;
+  return result;
+};
+
+const getActivityByProperties: (properties: OptionsSliceType) => Promise<activityData> = async (
+  properties: OptionsSliceType
+) => {
+  if (!(await hasInternetConnection())) {
+    handleNoConnection();
+    return emptyResult;
+  }
+
+  let url: string = '';
+
+  switch (properties.searchOption) {
+    case searchOption.ACCESSIBILITY:
+      url = `?accessibility=${properties.accessibilityMax}`;
+      break;
+    case searchOption.ACCESSIBILITY_RANGE:
+      url = `?minaccessibility=${properties.accessibilityMin}&maxaccessibility=${properties.accessibilityMax}`;
+      break;
+    case searchOption.PRICE:
+      url = `?price=${properties.priceMax}`;
+      break;
+    case searchOption.PRICE_RANGE:
+      url = `?minprice=${properties.accessibilityMin}&maxprice=${properties.accessibilityMax}`;
+      break;
+    case searchOption.ACTIVITY_TYPE:
+      url = `?type=${properties.activityType.join('&type=')}`;
+      break;
+    case searchOption.PARTICIPANTS:
+      url = `?participants=${properties.participants}`;
+      break;
+    default:
+      break;
+  }
+
+  const response = await API.get(url);
+
+  if (response.status !== 200) {
+    handleStatusError(response.status);
+    return emptyResult;
+  }
+
+  try {
+    const result: activityData = { ...response.data, activityType: response.data.type };
     return result;
-}
+  } catch {
+    handleObsoleteApi();
+  }
 
-const getActivityByProperties: (properties: OptionsSliceType) => Promise<activityData> = async (properties: OptionsSliceType) => {
-    
-    let url: string = '';
+  return emptyResult;
+};
 
-    switch(properties.searchOption) {
-        case searchOption.ACCESSIBILITY:
-            url = `?accessibility=${properties.accessibilityMax}`
-            break;
-        case searchOption.ACCESSIBILITY_RANGE:
-            url = `?minaccessibility=${properties.accessibilityMin}&maxaccessibility=${properties.accessibilityMax}`
-            break;
-        case searchOption.PRICE:
-            url = `?price=${properties.priceMax}`
-            break;
-        case searchOption.PRICE_RANGE:
-            url = `?minprice=${properties.accessibilityMin}&maxprice=${properties.accessibilityMax}`
-            break;
-        case searchOption.ACTIVITY_TYPE:
-            url = `?type=${properties.activityType.join('&type=')}`
-            break;
-        case searchOption.PARTICIPANTS:
-            url = `?participants=${properties.participants}`
-            break;
-        default:
-            break;                        
-    }
-
-    const response = await API.get(url)
-
-    if (response.status !== 200) {
-        // TODO: make error system
-    }
-
-    const result: activityData = { ...response.data, activityType: response.data.type }
-
-    return result;
-}
-
-export {
-    getRandomActivity,
-    getActivityByKey,
-    getActivityByProperties,
-}
+export { getRandomActivity, getActivityByKey, getActivityByProperties };
